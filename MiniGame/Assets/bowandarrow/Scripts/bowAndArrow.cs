@@ -223,7 +223,7 @@ public class bowAndArrow : MonoBehaviour {
 					arrowSwooshSoundPlayed = true;
 				}
 				// shot the arrow (rigid body physics)
-				shootArrow();
+				shootArrow(length);
 			}
 			// in any case: update the bowstring line renderer
 			drawBowString();
@@ -327,12 +327,12 @@ public class bowAndArrow : MonoBehaviour {
 	// get the bows rotationn and accelerate the arrow
 	//
 
-	public void shootArrow() {
+	public void shootArrow(float power) {
 		if (arrow.GetComponent<Rigidbody>() == null) {
 			arrowShot = true;
 			arrow.AddComponent<Rigidbody>();
 			arrow.transform.parent = gameManager.transform;
-			arrow.GetComponent<Rigidbody>().AddForce (Quaternion.Euler (new Vector3(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y,transform.rotation.eulerAngles.z))*new Vector3(25f*length,0,0), ForceMode.VelocityChange);
+			arrow.GetComponent<Rigidbody>().AddForce (Quaternion.Euler (new Vector3(transform.rotation.eulerAngles.x,transform.rotation.eulerAngles.y,transform.rotation.eulerAngles.z))*new Vector3(25f* power, 0,0), ForceMode.VelocityChange);
 		}
 		arrowPrepared = false;
 		stringPullout = stringRestPosition;
@@ -548,5 +548,18 @@ public class bowAndArrow : MonoBehaviour {
             createArrow(false);
             GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
         }
+
+        //if (GUI.Button(new Rect(100, 260, 150, 150), "auto shoot"))
+        //{
+        //    shootArrow(0.01f);
+        //}
+    }
+
+    public void MY_ResetGame()
+    {
+        resetGame();
+        Destroy(arrow);
+        createArrow(false);
+        GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
     }
 }
