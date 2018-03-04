@@ -140,8 +140,35 @@ public class rotateArrow : MonoBehaviour {
 			// inform the master script about the score
 			bow.GetComponent<bowAndArrow>().setPoints(actScore);
 		}
+
+        if (other.transform.name == "level1" || other.transform.name == "level2" || other.transform.name == "level3")
+        {
+            if (hasHit)
+            {
+                return;
+            }
+
+            arrowHead.SetActive(false);
+
+            GameObject.Find("targetRoot").GetComponent<TargetGenerator>().OnBeHitted();
+
+            GetComponent<AudioSource>().PlayOneShot(targetHit);
+            // set velocity to zero
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            // disable the rigidbody
+            GetComponent<Rigidbody>().isKinematic = true;
+            transform.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+
+            Debug.Log(gameObject.transform.position);
+            Debug.Log(other.contacts[0].point);
+            Debug.Log(other.transform.name);
+
+            hasHit = true;
+            Instantiate(new GameObject(), gameObject.transform.position, new Quaternion());
+        }
 	}
 
+    bool hasHit = false;
 
 	//
 	// public void setBow

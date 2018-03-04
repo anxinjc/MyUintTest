@@ -10,6 +10,7 @@ using System.Collections;
 [InitializeOnLoad]
 public class Welcome : EditorWindow {
 
+    
 	// The window size
 	static float sizeWidth = 630;
 	static float sizeHeight = 650;
@@ -28,8 +29,11 @@ public class Welcome : EditorWindow {
 	//
 
 	public static void Initialize() {
-		// Get existing open window or if none, make a new one:
-		Welcome window = (Welcome)EditorWindow.GetWindow (typeof (Welcome), true, "PLEASE TAKE A LOOK AT THE PROJECT DOCUMENTATION");
+
+        return;
+
+        // Get existing open window or if none, make a new one:
+        Welcome window = (Welcome)EditorWindow.GetWindow (typeof (Welcome), true, "PLEASE TAKE A LOOK AT THE PROJECT DOCUMENTATION");
 			
 		GUIStyle style = new GUIStyle();
 		

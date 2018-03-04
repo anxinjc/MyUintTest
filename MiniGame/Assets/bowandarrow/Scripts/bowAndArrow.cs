@@ -42,7 +42,7 @@ public class bowAndArrow : MonoBehaviour {
 
 	// some status vars
 	bool arrowShot;
-	bool arrowPrepared;
+	public bool arrowPrepared;
 
 	// position of the line renderers middle part 
 	Vector3 stringPullout;
@@ -149,6 +149,7 @@ public class bowAndArrow : MonoBehaviour {
         UISlider slider = powerBar.GetComponent<UISlider>();
 
         slider.onChange.Add(new EventDelegate(onPowerBarPressed));
+        
     }
 
     void onPowerBarPressed()
@@ -366,7 +367,7 @@ public class bowAndArrow : MonoBehaviour {
             //transform.eulerAngles = new Vector3(0,0,angleZ);
 
             //弓角度设成固定值，不再受玩家操作控制
-            transform.eulerAngles = new Vector3(0, 0, 45f);
+            transform.eulerAngles = new Vector3(0, 0, 40f);
 
 
 
@@ -524,7 +525,12 @@ public class bowAndArrow : MonoBehaviour {
 		highscoreCanvas.enabled = false;
 		instructionsCanvas.enabled = false;
 		gameCanvas.enabled = true;
+
+        arrowPrepared = false;
+
 		gameState = GameStates.game;
+
+
 	}
 
 	public void showMenu() {
@@ -532,4 +538,15 @@ public class bowAndArrow : MonoBehaviour {
 		gameState = GameStates.menu;
 		resetGame ();
 	}
+
+    void OnGUI()
+    {
+        if (GUI.Button(new Rect(100, 100, 150, 150), "reset"))
+        {
+            resetGame();
+            Destroy(arrow);
+            createArrow(false);
+            GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
+        }
+    }
 }
