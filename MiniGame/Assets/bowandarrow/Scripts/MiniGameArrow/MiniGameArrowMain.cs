@@ -30,19 +30,15 @@ namespace MiniGameArrow
 
         public GameState gameState = GameState.Menu;
 
-        public Arrow arrow;
+        public GameObject bow;
 
-
-        public Canvas menuCanvas;
-        public Canvas instructionsCanvas;
-        public Canvas highscoreCanvas;
-        public Canvas gameCanvas;
-        public Canvas gameOverCanvas;
-
+        public ArrowManager arrowManager;
+        
         // Use this for initialization
         void Start()
         {
-
+            bow = GameObject.Find("bow");
+            arrowManager = new ArrowManager(bow);
         }
 
         void init()
@@ -61,22 +57,21 @@ namespace MiniGameArrow
 
         void OnGUI()
         {
-            //if (GUI.Button(new Rect(100, 260, 150, 150), "play the game"))
-            //{
-            //    startGame();
-            //}
+            if (GUI.Button(new Rect(100, 100, 150, 150), "auto shoot"))
+            {
+                startGame();
+            }
         }
 
         void startGame()
         {
-            menuCanvas.enabled = false;
-            highscoreCanvas.enabled = false;
-            instructionsCanvas.enabled = false;
-            gameCanvas.enabled = true;
+            arrowManager.isAutoShoot = true;
 
-            //arrowPrepared = false;
-
-            //gameState = GameStates.game;
+            if (arrowManager.powerSlider.onDragFinished != null)
+            {
+                arrowManager.powerSlider.onDragFinished();
+            }
+            
         }
     }
 }
