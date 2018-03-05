@@ -21,24 +21,41 @@ public class Scene02Test : MonoBehaviour {
 
     float vr = 100;
     float sr = 0;
+
+    int i = 0;
+    float time = 0;
+    bool hasShowY = false;
+
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
+
+        //i++;
+        //time = Time.deltaTime;
+        //Debug.Log("这是第" + i + "帧");
+        //Debug.Log("时间为:" + time);
+
         if (isUseG)
         {
             arrow.transform.localPosition = new Vector3(sr, h, 0);
             v0 += g * Time.deltaTime;
             h += v0 * Time.deltaTime + 0.5f * g * Time.deltaTime * Time.deltaTime;
 
-            sr += vr * Time.deltaTime;
+            //sr += vr * Time.deltaTime;
             //speed += -0.981f * Time.deltaTime;
+            
+        }
 
-
+        i++;
+        if (i >= 250 && !hasShowY)
+        {
+            Debug.Log(arrow.transform.localPosition.y);
+            hasShowY = true;
         }
 	}
 
     IEnumerator showPosition()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         Debug.Log(arrow.transform.localPosition.y);
         
     }
@@ -67,14 +84,13 @@ public class Scene02Test : MonoBehaviour {
             //arrow.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)) * new Vector3(25f * 0.1f, 0, 0), ForceMode.VelocityChange);
 
             calculateResult();
-
-            Invoke("showPosition", 1);
+            
         }
     }
 
     void calculateResult()
     {
-        float s = v0 * 3 + 0.5f * g * 9f;
+        float s = v0 * 5f + 0.5f * g * 25f;
         Debug.Log("s = " + s);
     }
 }

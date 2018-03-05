@@ -45,18 +45,22 @@ namespace MiniGameArrow
             {
                 gameObject.AddComponent<Rigidbody>();
                 gameObject.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)) * new Vector3(25f * power, 0, 0), ForceMode.VelocityChange);
-                Debug.Log("power = " + power);
+                //Debug.Log("power = " + power);
             }
 
             arrowState = ArrowState.flying;
+
+            Global.flyTime = 0f;
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
             if (arrowState == ArrowState.flying)
             {
                 rotateArrow();
+
+                Global.flyTime += 0.02f;
             }
 
         }
@@ -83,7 +87,17 @@ namespace MiniGameArrow
         {
             if (other.transform.name == "Cube")
             {
-                Debug.Log(other.contacts[0].point);
+                if (hasHitted)
+                {
+                    return;
+                }
+                hasHitted = true;
+
+                //ShootData shootData = new ShootData { flyTime = Global.flyTime, hitObjectName = other.gameObject.name, hitPoint = other.contacts[0].point, power = Global.power };
+                //Global.dataList.Add(shootData);
+                //Debug.Log(shootData.ToString());
+
+                //Debug.Log(other.contacts[0].point);
                 OnDestroyArrow();
             }
 
@@ -93,6 +107,16 @@ namespace MiniGameArrow
                 {
                     return;
                 }
+                hasHitted = true;
+
+                //ShootData shootData = new ShootData { flyTime = Global.flyTime, hitObjectName = other.gameObject.name, hitPoint = other.contacts[0].point, power = Global.power };
+                //Global.dataList.Add(shootData);
+                //Debug.Log(shootData.ToString());
+
+                //OnDestroyArrow();
+
+                //return;
+
 
                 arrowHead.SetActive(false);
 
@@ -117,6 +141,32 @@ namespace MiniGameArrow
         {
             Destroy(gameObject);
             MiniGameArrowMain.Instance.arrowManager.GenerateArrow();
+        }
+
+        void saveData()
+        {
+
+        }
+    }
+
+    public static class Global
+    {
+        public static float flyTime = 0f;
+        public static float power = 0f;
+        public static List<ShootData> dataList = new List<ShootData>();
+        public static List<ShootData> dataListFromConfig = new List<ShootData>();
+    }
+
+    public class ShootData
+    {
+        public float power;
+        public float flyTime;
+        public Vector3 hitPoint;
+        public string hitObjectName;
+
+        public override string ToString()
+        {
+            return string.Format("power = {0};  flyTime = {1};  hitObjectName = {2};  hitPoint = {3};  hitPointX = {4};  hitPointY = {5};  hitPointZ = {6}", power, flyTime, hitObjectName, hitPoint, hitPoint.x, hitPoint.y, hitPoint.z);
         }
     }
 }

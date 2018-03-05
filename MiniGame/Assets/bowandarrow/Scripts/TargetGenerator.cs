@@ -7,6 +7,9 @@ public class TargetGenerator : MonoBehaviour {
     public GameObject targetTemplate;
     public GameObject curTarget;
 
+    public GameObject startPoint;
+    public GameObject endPoint;
+
     enum TargetState
     {
         beHitted,
@@ -19,11 +22,11 @@ public class TargetGenerator : MonoBehaviour {
     
 	// Use this for initialization
 	void Start () {
-
-
+        startPoint = Resources.Load("Prefabs/startPoint") as GameObject;
+        endPoint = Resources.Load("Prefabs/endPoint") as GameObject;
     }
 	
-    void Update()
+    void FixedUpdate()
     {
         switch (m_state)
         {
@@ -73,5 +76,17 @@ public class TargetGenerator : MonoBehaviour {
         }
 
         m_state = TargetState.notBeHitted;
+    }
+
+
+    Vector3 startPosition;
+    Vector3 endPosition;
+    public void SetOverTarget(float time)
+    {
+        startPosition = curTarget.transform.position;
+        endPosition = curTarget.transform.position - time / 0.02f * new Vector3(0, speed * 0.02f, 0);
+
+        Instantiate(startPoint, startPosition, Quaternion.identity);
+        Instantiate(endPoint, endPosition, Quaternion.identity);
     }
 }
