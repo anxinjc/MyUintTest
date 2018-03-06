@@ -150,7 +150,7 @@ public class rotateArrow : MonoBehaviour {
 
             arrowHead.SetActive(false);
 
-            GameObject.Find("targetRoot").GetComponent<TargetGenerator>().OnBeHitted();
+            //GameObject.Find("targetRoot").GetComponent<TargetGenerator>().OnBeHitted();
 
             GetComponent<AudioSource>().PlayOneShot(targetHit);
             // set velocity to zero

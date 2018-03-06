@@ -541,13 +541,13 @@ public class bowAndArrow : MonoBehaviour {
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect(100, 100, 150, 150), "reset"))
-        {
-            resetGame();
-            Destroy(arrow);
-            createArrow(false);
-            GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
-        }
+        //if (GUI.Button(new Rect(100, 100, 150, 150), "reset"))
+        //{
+        //    resetGame();
+        //    Destroy(arrow);
+        //    createArrow(false);
+        //    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
+        //}
 
         //if (GUI.Button(new Rect(100, 260, 150, 150), "auto shoot"))
         //{
@@ -555,11 +555,11 @@ public class bowAndArrow : MonoBehaviour {
         //}
     }
 
-    public void MY_ResetGame()
-    {
-        resetGame();
-        Destroy(arrow);
-        createArrow(false);
-        GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
-    }
+    //public void MY_ResetGame()
+    //{
+    //    resetGame();
+    //    Destroy(arrow);
+    //    createArrow(false);
+    //    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().Reset();
+    //}
 }

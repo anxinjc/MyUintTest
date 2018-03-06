@@ -21,7 +21,8 @@ namespace MiniGameArrow
             }
         }
 
-        Action update;
+        public Action fixedUpdate;
+        public Action startGame;
 
         public enum GameState
         {
@@ -45,6 +46,11 @@ namespace MiniGameArrow
         }
 
         void init()
+        {
+            readConfig();
+        }
+
+        void readConfig()
         {
             TextAsset txtFile = Resources.Load("Configs/shootdata") as TextAsset;
             if (txtFile != null)
@@ -74,22 +80,43 @@ namespace MiniGameArrow
         }
 
         // Update is called once per frame
-        void Update()
+        void FixedUpdate()
         {
-            if (update != null)
+            if (fixedUpdate != null)
             {
-                update();
+                fixedUpdate();
             }
         }
 
+        string autoShoot = Global.autoShoot.ToString();
+        string needControlResult = Global.needControlResult.ToString();
+
         void OnGUI()
         {
-            if (GUI.Button(new Rect(100, 100, 150, 150), "auto shoot"))
+            if (GUI.Button(new Rect(100, 100, 150, 100), "自动射击: " + autoShoot))
             {
-                autoShoot();
+                Global.autoShoot = !Global.autoShoot;
+                autoShoot = Global.autoShoot.ToString();
             }
 
-            if (GUI.Button(new Rect(260, 100, 150, 150), "save data"))
+            if (!Global.autoShoot)
+            {
+                if (GUI.Button(new Rect(420, 100, 150, 100), "不可击中: " + needControlResult))
+                {
+                    Global.needControlResult = !Global.needControlResult;
+                    needControlResult = Global.needControlResult.ToString();
+                }
+            }
+
+            if (GUI.Button(new Rect(260, 100, 150, 100), "start game"))
+            {
+                if (startGame != null)
+                {
+                    startGame();
+                }
+            }
+
+            if (GUI.Button(new Rect(100, 210, 150, 100), "save data"))
             {
                 string content = "";
                 for (int i = 0, length = Global.dataList.Count; i < length; i++)
@@ -110,18 +137,27 @@ namespace MiniGameArrow
                     sw.Dispose();
                 }
             }
-        }
 
-        void autoShoot()
-        {
-            arrowManager.isAutoShoot = true;
-
-            if (arrowManager.powerSlider.onDragFinished != null)
+            if (GUI.Button(new Rect(260, 210, 150, 100), "mark all hitPoints"))
             {
-                arrowManager.powerSlider.onDragFinished();
+                GameObject hitPointPrefab = Resources.Load("Prefabs/hitPoint") as GameObject;
+                for (int i = 0, length = Global.dataListFromConfig.Count; i < length; i++)
+                {
+                    Instantiate(hitPointPrefab, Global.dataListFromConfig[i].hitPoint, Quaternion.identity);
+                }
             }
-            
         }
+
+        //void autoShoot()
+        //{
+        //    arrowManager.isAutoShoot = true;
+
+        //    if (arrowManager.powerSlider.onDragFinished != null)
+        //    {
+        //        arrowManager.powerSlider.onDragFinished();
+        //    }
+            
+        //}
     }
 }
 
