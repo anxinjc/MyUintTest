@@ -23,6 +23,10 @@ namespace MiniGameArrow
 
         public GameObject arrowHead;
 
+        public bool addAcceleration = false;
+
+        public Rigidbody rigidbody;
+
         // Use this for initialization
         void Start()
         {
@@ -43,18 +47,29 @@ namespace MiniGameArrow
         {
             if (gameObject.GetComponent<Rigidbody>() == null)
             {
-                gameObject.AddComponent<Rigidbody>();
-                gameObject.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)) * new Vector3(25f * power, 0, 0), ForceMode.VelocityChange);
+                rigidbody = gameObject.AddComponent<Rigidbody>();
+                rigidbody.AddForce(Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)) * new Vector3(25f * power, 0, 0), ForceMode.VelocityChange);
                 //Debug.Log("power = " + power);
             }
+
+            lastFramePosition = transform.position;
 
             arrowState = ArrowState.flying;
 
             Global.flyTime = 0f;
 
             GameObject.Find("UI Root").transform.Find("Control - Colored Slider").gameObject.GetComponent<BoxCollider>().enabled = false;
+
+            
+
+            //addAcceleration = true;
         }
 
+        Vector3 lastFramePosition = new Vector3(0, 0, 0);
+        Vector3 curFramePosition = new Vector3(0, 0, 0);
+        float deltaY = 0f;
+        bool listeningDeltaY = true;
+        
         // Update is called once per frame
         void FixedUpdate()
         {
@@ -62,8 +77,35 @@ namespace MiniGameArrow
             {
                 rotateArrow();
 
+
+                
+                if (rigidbody != null && addAcceleration)
+                {
+                    rigidbody.AddForce(Vector3.right * 15f, ForceMode.Acceleration);
+                }
+
+                if (listeningDeltaY)
+                {
+                    curFramePosition = transform.position;
+
+                    deltaY = curFramePosition.y - lastFramePosition.y;
+
+                    //Debug.Log(deltaY);
+
+                    if (deltaY < 0f)
+                    {
+                        addAcceleration = true;
+                        listeningDeltaY = false;
+                        //Debug.Log("addAcceleration");
+                    }
+
+                    lastFramePosition = curFramePosition;
+                }
+
                 Global.flyTime += 0.02f;
             }
+
+
 
         }
 

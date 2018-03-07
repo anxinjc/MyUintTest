@@ -141,6 +141,11 @@ namespace MiniGameArrow
             if (GUI.Button(new Rect(260, 210, 150, 100), "mark all hitPoints"))
             {
                 GameObject hitPointPrefab = Resources.Load("Prefabs/hitPoint") as GameObject;
+                //for (int i = 0, length = Global.dataList.Count; i < length; i++)
+                //{
+                //    Instantiate(hitPointPrefab, Global.dataList[i].hitPoint, Quaternion.identity);
+                //}
+
                 for (int i = 0, length = Global.dataListFromConfig.Count; i < length; i++)
                 {
                     Instantiate(hitPointPrefab, Global.dataListFromConfig[i].hitPoint, Quaternion.identity);

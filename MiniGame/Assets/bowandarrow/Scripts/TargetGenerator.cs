@@ -17,6 +17,10 @@ namespace MiniGameArrow
 
         bool gameStarted = false;
 
+        //箭靶移动范围
+        Vector3 m_startPosition = new Vector3(0, 0, 0);
+        Vector3 m_endPosition = new Vector3(0, 0, 0);
+
 
         enum TargetState
         {
@@ -57,12 +61,31 @@ namespace MiniGameArrow
                 autoShootTarget.SetActive(false);
             }
 
+            findTargetMoveRange();
+        }
 
+        void findTargetMoveRange()
+        {
+            GameObject g = new GameObject("g_start");
+            g.transform.parent = GameObject.Find("targetRoot").transform;
+
+            g.transform.localPosition = new Vector3(0, 6.07f, 0);      //6.07    ~    -6.12
+            m_startPosition = g.transform.position;
+            
+            g.transform.localPosition = new Vector3(0, -6.12f, 0);
+            m_endPosition = g.transform.position;
+
+            Destroy(g);
         }
 
         void FixedUpdate()
         {
             if (!gameStarted)
+            {
+                return;
+            }
+
+            if (Global.autoShoot)
             {
                 return;
             }
@@ -93,6 +116,7 @@ namespace MiniGameArrow
             }
 
         }
+        
 
         void generateTarget()
         {
@@ -100,7 +124,7 @@ namespace MiniGameArrow
             curTarget.name = "curTarget";
             curTarget.transform.parent = GameObject.Find("targetRoot").transform;
             curTarget.transform.localPosition = new Vector3(0, 6.07f, 0);      //6.07    ~    -6.12
-
+            
         }
 
         public void OnBeHitted()
@@ -123,8 +147,23 @@ namespace MiniGameArrow
         Vector3 endPosition;
         public Vector3 SetOverTarget(float time)
         {
-            startPosition = curTarget.transform.position;
-            endPosition = curTarget.transform.position - time / 0.02f * new Vector3(0, speed * 0.02f, 0);
+            if (curTarget == null)
+            {
+                startPosition = m_startPosition;
+            }
+            else
+            {
+                startPosition = curTarget.transform.position;
+            }
+
+            endPosition = startPosition - time / 0.02f * new Vector3(0, speed * 0.02f, 0);
+
+            //如果结束点超出下限，则从起点重新累加
+            if (endPosition.y <= m_endPosition.y)
+            {
+                Vector3 delta = m_endPosition - endPosition;
+                endPosition = m_startPosition - delta;
+            }
 
             //Instantiate(startPoint, startPosition, Quaternion.identity);
             //Instantiate(endPoint, endPosition, Quaternion.identity);

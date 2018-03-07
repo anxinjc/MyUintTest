@@ -79,18 +79,20 @@ namespace MiniGameArrow
 
             //提前生成落点
             ShootData shootData = new ShootData();
+            int index = 0;
             float pValue = powerSlider.value;
-            foreach (ShootData item in Global.dataListFromConfig)
+            for (int i = 0, length = Global.dataListFromConfig.Count; i < length; i++)
             {
-                if (Mathf.Abs(pValue - item.power) < 0.01f)
+                if (Mathf.Abs(pValue - Global.dataListFromConfig[i].power) < 0.01f)
                 {
-                    shootData = item;
+                    shootData = Global.dataListFromConfig[i];
+                    index = i;
+                    break;
                 }
             }
 
-            Debug.Log(hitPointPrefab == null);
             //hitPoint = GameObject.Instantiate(hitPointPrefab, shootData.hitPoint, Quaternion.identity) as GameObject;
-            Debug.Log(shootData.ToString());
+            //Debug.Log(shootData.ToString());
 
             //计算靶子位移
             Vector3 targetEndPosition = GameObject.Find("targetRoot").GetComponent<TargetGenerator>().SetOverTarget(shootData.flyTime);
@@ -103,30 +105,98 @@ namespace MiniGameArrow
 
             if (Global.needControlResult)
             {
-                if (deltaY >= 0 && deltaY <= 1.2f)
-                {
-                    realPower += 0.04f;
-                    //realPower += 1.13f - deltaY + 0.01f;
-                    Debug.Log("可击中上半部！;;deltaY=" + deltaY + ";;powerSlider.value=" + powerSlider.value + ";;realPower=" + realPower);
-                    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().HideAllCollider();
-                }
-                else if (deltaY < 0 && deltaY >= -1.2f)
-                {
-                    realPower -= 0.04f;
-                    //realPower -= (1.13f + deltaY + 0.01f);
-                    Debug.Log("可击中下半部！;;deltaY=" + deltaY + ";;powerSlider.value=" + powerSlider.value + ";;realPower=" + realPower);
-                    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().HideAllCollider();
-                }
-                else
-                {
-                    Debug.Log("deltaY=" + deltaY);
-                }
+                realPower = findExactlyMissPower(targetEndPosition, index);
+
+                //if (deltaY >= 0 && deltaY <= 1.2f)
+                //{
+                //    realPower = findExactlyMissPower_top(targetEndPosition, index);
+                //    Debug.Log("可击中上半部！;;deltaY=" + deltaY + ";;powerSlider.value=" + powerSlider.value + ";;realPower=" + realPower);
+                //    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().HideAllCollider();
+                //}
+                //else if (deltaY < 0 && deltaY >= -1.2f)
+                //{
+                //    realPower -= 0.04f;
+                //    Debug.Log("可击中下半部！;;deltaY=" + deltaY + ";;powerSlider.value=" + powerSlider.value + ";;realPower=" + realPower);
+                //    GameObject.Find("targetRoot").GetComponent<TargetGenerator>().HideAllCollider();
+                //}
+                //else
+                //{
+                //    Debug.Log("deltaY=" + deltaY);
+                //}
             }
             
             arrow.GetComponent<Arrow>().Shoot(realPower);
         }
+
         
-        
+        /// <summary>
+        /// 如果提前预知可命中，则由近及远依次计算其临近索引的射击数据，找到刚好脱靶的数值
+        /// </summary>
+        float findExactlyMissPower(Vector3 targetEndPosition, int shootIndex)
+        {
+            float finalPower = powerSlider.value;
+            
+            float curDeltaY = calculateDeltaY(targetEndPosition, shootIndex);
+
+            if (curDeltaY >= 0 && curDeltaY <= 1.3f)        //可命中上半部
+            {
+                //Debug.Log("可击中上半部！;;deltaY=" + curDeltaY + ";;  powerSlider.value=" + powerSlider.value);
+                for (int i = shootIndex, length = Global.dataListFromConfig.Count; i < length; i++)
+                {
+                    //Debug.Log("try power: " + Global.dataListFromConfig[i].power);
+                    float deltaY = calculateDeltaY(targetEndPosition, i);
+                    if (deltaY > 1.3f)
+                    {
+                        finalPower = Global.dataListFromConfig[i].power;
+                        //Debug.Log("final power: " + finalPower + ";; final deltaY: " + deltaY);
+                        break;
+                    }
+                }
+            }
+            else if (curDeltaY < 0 && curDeltaY >= -1.3f)       //可命中下半部
+            {
+                //Debug.Log("可击中下半部！;;deltaY=" + curDeltaY + ";;  powerSlider.value=" + powerSlider.value);
+                for (int i = shootIndex; i >= 0; i--)
+                {
+                    //Debug.Log("try power: " + Global.dataListFromConfig[i].power);
+                    float deltaY = calculateDeltaY(targetEndPosition, i);
+                    if (deltaY < -1.3f)
+                    {
+                        finalPower = Global.dataListFromConfig[i].power;
+                        //Debug.Log("final power: " + finalPower + ";; final deltaY: " + deltaY);
+                        break;
+                    }
+                }
+            }
+
+            return finalPower;
+        }
+
+        float findExactlyMissPower_top(Vector3 targetEndPosition, int shootIndex)
+        {
+            float finalPower = powerSlider.value;
+
+            for (int i = shootIndex, length = Global.dataListFromConfig.Count; i < length; i++)
+            {
+                Debug.Log("try power: " + Global.dataListFromConfig[i].power);
+                float deltaY = calculateDeltaY(targetEndPosition, i);
+                if (deltaY > 1.2f)
+                {
+                    finalPower = Global.dataListFromConfig[i].power;
+                    break;
+                }
+            }
+
+            return finalPower;
+        }
+
+        float calculateDeltaY(Vector3 targetEndPosition, int shootIndex)
+        {
+            Vector3 hitPoint = Global.dataListFromConfig[shootIndex].hitPoint;
+            return hitPoint.y - targetEndPosition.y;
+        }
+
+
         void onAutoShoot()
         {
             powerSlider.value = autoPower;
